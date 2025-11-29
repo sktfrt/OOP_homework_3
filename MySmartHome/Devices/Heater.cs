@@ -10,7 +10,7 @@ namespace MySmartHome.Devices
 
         public void HandleEvent(string eventType, object eventData)
         {
-            if (eventType = "TemperatureChanged")
+            if (eventType == "TemperatureChanged")
             {
                 int temperature = (int)eventData;
                 if (temperature < minTemperature && !isOn)

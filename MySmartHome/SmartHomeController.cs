@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Collections.Generic;
 using MySmartHome.Devices;
 
@@ -10,12 +12,12 @@ namespace SmartHomeSystem
         public event Action<int> OnTemperatureChanged;
         public event Action OnMotionDetected;
 
-        private readonly List<ISmartDevice> devices = new List<ISmartDevice>();
+        private readonly Dictionary<string, ISmartDevice> devices = new();
         private readonly EventLogger logger = new EventLogger();
 
-        public void RegisterDevice(ISmartDevice device)
+        public void RegisterDevice(string name, ISmartDevice device)
         {
-            // Implement adding a device to the devices list.
+            devices[name] = device;
         }
 
         public void ChangeDayTime(string timeOfDay)
@@ -27,22 +29,34 @@ namespace SmartHomeSystem
 
         public void ChangeTemperature(int temperature)
         {
-            // Implement triggering the OnTemperatureChanged event and logging the event.
+            Console.WriteLine($"Event: Temperature changed to {temperature}");
+            logger.Log($"Temperature changed to {temperature}");
+            OnTemperatureChanged?.Invoke(temperature);
         }
 
         public void DetectMotion()
         {
-            // Implement triggering the OnMotionDetected event and logging the event.
+            Console.WriteLine("Event: Motion detected");
+            logger.Log("Motion detected");
+            OnMotionDetected?.Invoke();
         }
 
         public void TriggerDevice(string deviceName, string command)
         {
-            // Implement finding the device by name, calling ExecuteCommand, and logging.
+            if (!devices.ContainsKey(deviceName))
+            {
+                logger.Log($"Device '{deviceName}' not found.");
+                return;
+            }
+
+            var device = devices[deviceName];
+            device.ExecuteCommand(command);
+            logger.Log($"Device '{deviceName}' executed command '{command}'.");
         }
 
         public void ShowLog()
         {
-            // Implement showing the event log via logger.
+            logger.ShowLog();
         }
     }
 }

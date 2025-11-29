@@ -17,9 +17,9 @@ namespace SmartHomeSystem
             Heater heater = new Heater();
 
             // Register devices
-            controller.RegisterDevice(light);
-            controller.RegisterDevice(airConditioner);
-            controller.RegisterDevice(heater);
+            controller.RegisterDevice("Light", light);
+            controller.RegisterDevice("Air Conditioner", airConditioner);
+            controller.RegisterDevice("Heater", heater);
 
             // Subscribe devices to events
             controller.OnDayTimeChanged += time => light.HandleEvent("DayTimeChanged", time);

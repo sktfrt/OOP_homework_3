@@ -16,12 +16,12 @@ namespace MySmartHome.Devices
                 if (dayTime == "Morning" && !isOn)
                 {
                     isOn = true;
-                    Console.WriteLine("Light turn on.");
+                    Console.WriteLine("Light turn off.");
                 }
                 else if (dayTime == "Night" && isOn)
                 {
                     isOn = false;
-                    Console.WriteLine("Light turn off");
+                    Console.WriteLine("Light turn on");
                 }
             }
         }

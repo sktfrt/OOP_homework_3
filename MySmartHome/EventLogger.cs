@@ -9,12 +9,20 @@ namespace SmartHomeSystem
 
         public void Log(string message)
         {
-            // Implement adding a message to the log with a timestamp.
+            string entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}";
+            log.Add(entry);
         }
 
         public void ShowLog()
         {
-            // Implement displaying the log entries in the console.
+            if (log.Count == 0)
+            {
+                Console.WriteLine("Log is empty.");
+                return;
+            }
+
+            foreach (var entry in log)
+                Console.WriteLine(entry);
         }
     }
 }
