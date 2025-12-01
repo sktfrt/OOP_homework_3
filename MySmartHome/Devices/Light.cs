@@ -5,6 +5,7 @@ namespace MySmartHome.Devices
 {
     public class Light : ISmartDevice
     {
+        private readonly EventLogger logger = new EventLogger();
         private bool isOn;
         private string brightness;
 
@@ -16,12 +17,12 @@ namespace MySmartHome.Devices
                 if (dayTime == "Morning" && !isOn)
                 {
                     isOn = true;
-                    Console.WriteLine("Light turn off.");
+                    logger.Log("Light turned on.");
                 }
                 else if (dayTime == "Night" && isOn)
                 {
                     isOn = false;
-                    Console.WriteLine("Light turn on");
+                    logger.Log("Light turned off");
                 }
             }
         }
@@ -33,7 +34,7 @@ namespace MySmartHome.Devices
                 brightness = (string)settings["Brightness"];
             }
 
-            Console.WriteLine($"Light configured: Brightness={brightness}");
+            logger.Log($"Light configured: Brightness={brightness}");
         }
 
         public void ExecuteCommand(string command)
@@ -41,16 +42,16 @@ namespace MySmartHome.Devices
             if (command == "On")
             {
                 isOn = true;
-                Console.WriteLine("Light manually turned on.");
+                logger.Log("Light manually turned on.");
             }
             else if (command == "Off")
             {
                 isOn = false;
-                Console.WriteLine("Light manually turned off.");
+                logger.Log("Light manually turned off.");
             }
             else
             {
-                Console.WriteLine("Invalid command for Light");
+                logger.Log("Invalid command for Light");
             }
         }
     }

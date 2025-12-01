@@ -5,6 +5,7 @@ namespace MySmartHome.Devices
 {
     public class AirConditioner : ISmartDevice
     {
+        private readonly EventLogger logger = new EventLogger();
         private int minTemperature = 18;
         private int maxTemperature = 25;
         private bool isOn;
@@ -17,12 +18,12 @@ namespace MySmartHome.Devices
                 if (temperature > maxTemperature && !isOn)
                 {
                     isOn = true;
-                    Console.WriteLine("Air Conditioner turned on (High Temperature).");
+                    logger.Log("Air Conditioner turned on (High Temperature).");
                 }
                 else if (temperature < minTemperature && isOn)
                 {
                     isOn = false;
-                    Console.WriteLine("Air Conditioner turned off (Low Temperature).");
+                    logger.Log("Air Conditioner turned off (Low Temperature).");
                 }
             }
         }
@@ -34,7 +35,7 @@ namespace MySmartHome.Devices
             if (settings.ContainsKey("MaxTemperature"))
                 maxTemperature = (int)settings["MaxTemperature"];
 
-            Console.WriteLine($"Air Conditioner configured: Min={minTemperature}°C, Max={maxTemperature}°C.");
+            logger.Log($"Air Conditioner configured: Min={minTemperature}°C, Max={maxTemperature}°C.");
         }
 
         public void ExecuteCommand(string command)
@@ -42,16 +43,16 @@ namespace MySmartHome.Devices
             if (command == "On")
             {
                 isOn = true;
-                Console.WriteLine("Air Conditioner manually turned on.");
+                logger.Log("Air Conditioner manually turned on.");
             }
             else if (command == "Off")
             {
                 isOn = false;
-                Console.WriteLine("Air Conditioner manually turned off.");
+                logger.Log("Air Conditioner manually turned off.");
             }
             else
             {
-                Console.WriteLine("Invalid command for Air Conditioner.");
+                logger.Log("Invalid command for Air Conditioner.");
             }
         }
     }

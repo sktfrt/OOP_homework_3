@@ -5,6 +5,7 @@ namespace MySmartHome.Devices
 {
     public class Heater : ISmartDevice
     {
+        private readonly EventLogger logger = new EventLogger();
         private int minTemperature = 10;
         private bool isOn;
 
@@ -16,12 +17,12 @@ namespace MySmartHome.Devices
                 if (temperature < minTemperature && !isOn)
                 {
                     isOn = true;
-                    Console.WriteLine("Heater turned on.");
+                    logger.Log("Heater turned on.");
                 }
                 else if (temperature >= minTemperature && isOn)
                 {
                     isOn = false;
-                    Console.WriteLine("Heater turned off.");
+                    logger.Log("Heater turned off.");
                 }
             }
         }
@@ -31,7 +32,7 @@ namespace MySmartHome.Devices
             if (settings.ContainsKey("minTemperature"))
                 minTemperature = (int)settings["minTemperature"];
 
-            Console.WriteLine($"Heater configued: Min={minTemperature}°C.");
+            logger.Log($"Heater configued: Min={minTemperature}°C.");
         }
 
         public void ExecuteCommand(string command)
@@ -39,16 +40,16 @@ namespace MySmartHome.Devices
             if (command == "On")
             {
                 isOn = true;
-                Console.WriteLine("Heater manually turn on.");
+                logger.Log("Heater manually turn on.");
             }
             else if (command == "Off")
             {
                 isOn = false;
-                Console.WriteLine("Heater manually turn off.");
+                logger.Log("Heater manually turn off.");
             }
             else
             {
-                Console.WriteLine("Invalid command for Heater.");
+                logger.Log("Invalid command for Heater.");
             }
         }
     }

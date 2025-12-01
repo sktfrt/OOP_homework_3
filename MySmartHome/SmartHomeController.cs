@@ -17,28 +17,77 @@ namespace SmartHomeSystem
 
         public void RegisterDevice(string name, ISmartDevice device)
         {
-            devices[name] = device;
+            if (devices.ContainsKey(name))
+            {
+                logger.Log($"Device {name} already exist\n");
+                return;
+            }
+
+            devices[name.ToLower()] = device;
         }
 
         public void ChangeDayTime(string timeOfDay)
         {
-            Console.WriteLine($"Event: Daytime changed to {timeOfDay}.");
+            logger.Log($"Event: Daytime changed to {timeOfDay}.");
             logger.Log($"Daytime changed to {timeOfDay}.");
-            OnDayTimeChanged?.Invoke(timeOfDay);
+
+            var handlers = OnDayTimeChanged?.GetInvocationList();
+            if (handlers == null) return;
+
+            foreach (var handler in handlers)
+            {
+                try
+                {
+                    ((Action<string>)handler).Invoke(timeOfDay);
+                }
+                catch (Exception e)
+                {
+                    logger.Log($"Handler error for ChangeDayTime: {e.Message}");
+                }
+            }
+
         }
 
         public void ChangeTemperature(int temperature)
         {
-            Console.WriteLine($"Event: Temperature changed to {temperature}");
+            logger.Log($"Event: Temperature changed to {temperature}");
             logger.Log($"Temperature changed to {temperature}");
-            OnTemperatureChanged?.Invoke(temperature);
+            
+            var handlers = OnTemperatureChanged?.GetInvocationList();
+            if (handlers == null) return;
+
+            foreach (var handler in handlers)
+            {
+                try
+                {
+                    ((Action<int>)handler).Invoke(temperature);
+                }
+                catch (Exception e)
+                {
+                    logger.Log($"Handler error for ChangeTemperature: {e.Message}");
+                }
+            }
         }
 
         public void DetectMotion()
         {
-            Console.WriteLine("Event: Motion detected");
+            logger.Log("Event: Motion detected");
             logger.Log("Motion detected");
-            OnMotionDetected?.Invoke();
+            
+            var handlers = OnMotionDetected?.GetInvocationList();
+            if (handlers == null) return;
+
+            foreach (var handler in handlers)
+            {
+                try
+                {
+                    ((Action)handler).Invoke();
+                }
+                catch (Exception e)
+                {
+                    logger.Log($"Handler error for DetectMotion: {e.Message}");
+                }
+            }
         }
 
         public void TriggerDevice(string deviceName, string command)
