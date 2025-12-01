@@ -92,6 +92,7 @@ namespace SmartHomeSystem
 
         public void TriggerDevice(string deviceName, string command)
         {
+            deviceName = deviceName.ToLower();
             if (!devices.ContainsKey(deviceName))
             {
                 logger.Log($"Device '{deviceName}' not found.");

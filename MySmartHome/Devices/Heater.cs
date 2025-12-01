@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartHomeSystem;
 
 namespace MySmartHome.Devices
 {
