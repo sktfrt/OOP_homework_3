@@ -10,20 +10,32 @@ namespace SmartHomeSystem
     {
         public event Action<string> OnDayTimeChanged;
         public event Action<int> OnTemperatureChanged;
-        public event Action OnMotionDetected;
+        public event Action<bool> OnMotionDetected;
 
-        private readonly Dictionary<string, ISmartDevice> devices = new();
+        private readonly List<ISmartDevice> devices = new();
         private readonly EventLogger logger = new EventLogger();
 
-        public void RegisterDevice(string name, ISmartDevice device)
-        {
-            if (devices.ContainsKey(name))
-            {
-                logger.Log($"Device {name} already exist\n");
-                return;
-            }
 
-            devices[name.ToLower()] = device;
+        public void RegisterDevice(ISmartDevice device)
+        {
+            devices.Add(device);
+        }
+
+        private void SafeInvoke<T>(MulticastDelegate multicast, T arg, string eventName)
+        {
+            if (multicast == null) return;
+
+            foreach (var handler in multicast.GetInvocationList())
+            {
+                try
+                {
+                    ((Action<T>)handler).Invoke(arg);
+                }
+                catch (Exception e)
+                {
+                    logger.Log($"Handler error in {eventName}: {e.Message}");
+                }
+            }
         }
 
         public void ChangeDayTime(string timeOfDay)
@@ -31,77 +43,38 @@ namespace SmartHomeSystem
             logger.Log($"Event: Daytime changed to {timeOfDay}.");
             logger.Log($"Daytime changed to {timeOfDay}.");
 
-            var handlers = OnDayTimeChanged?.GetInvocationList();
-            if (handlers == null) return;
-
-            foreach (var handler in handlers)
-            {
-                try
-                {
-                    ((Action<string>)handler).Invoke(timeOfDay);
-                }
-                catch (Exception e)
-                {
-                    logger.Log($"Handler error for ChangeDayTime: {e.Message}");
-                }
-            }
-
+            SafeInvoke(OnDayTimeChanged, timeOfDay, nameof(ChangeDayTime));
         }
 
         public void ChangeTemperature(int temperature)
         {
             logger.Log($"Event: Temperature changed to {temperature}");
             logger.Log($"Temperature changed to {temperature}");
-            
-            var handlers = OnTemperatureChanged?.GetInvocationList();
-            if (handlers == null) return;
 
-            foreach (var handler in handlers)
-            {
-                try
-                {
-                    ((Action<int>)handler).Invoke(temperature);
-                }
-                catch (Exception e)
-                {
-                    logger.Log($"Handler error for ChangeTemperature: {e.Message}");
-                }
-            }
+            SafeInvoke(OnTemperatureChanged, temperature, nameof(ChangeTemperature));
         }
 
-        public void DetectMotion()
+        public void DetectMotion(bool detected)
         {
             logger.Log("Event: Motion detected");
             logger.Log("Motion detected");
-            
-            var handlers = OnMotionDetected?.GetInvocationList();
-            if (handlers == null) return;
 
-            foreach (var handler in handlers)
-            {
-                try
-                {
-                    ((Action)handler).Invoke();
-                }
-                catch (Exception e)
-                {
-                    logger.Log($"Handler error for DetectMotion: {e.Message}");
-                }
-            }
+            SafeInvoke(OnMotionDetected, detected, nameof(DetectMotion));
         }
 
         public void TriggerDevice(string deviceName, string command)
         {
-            deviceName = deviceName.ToLower();
-            if (!devices.ContainsKey(deviceName))
+            var device = devices
+                .FirstOrDefault(d => d.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase));
+
+            if (device == null)
             {
-                logger.Log($"Device '{deviceName}' not found.");
+                logger.Log($"Device '{deviceName}' not found.\nRegistered devices: AirConditioner, Heater, Light");
                 return;
             }
 
-            var device = devices[deviceName];
             device.ExecuteCommand(command);
-            logger.Log($"Device '{deviceName}' executed command '{command}'.");
+            logger.Log($"Device '{deviceName}' executed '{command}'.");
         }
 
         public void ShowLog()

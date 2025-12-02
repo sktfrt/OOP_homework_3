@@ -9,5 +9,6 @@ namespace MySmartHome.Devices
         void HandleEvent(string eventType, object eventData);
         void Configure(Dictionary<string, object> settings);
         void ExecuteCommand(string command);
+        string Name { get; set; }
     }
 }

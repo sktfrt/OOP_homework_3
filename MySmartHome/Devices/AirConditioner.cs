@@ -10,6 +10,7 @@ namespace MySmartHome.Devices
         private int minTemperature = 18;
         private int maxTemperature = 25;
         private bool isOn;
+        public string Name { get; set;} = "AirConditioner";
 
         public void HandleEvent(string eventType, object eventData)
         {

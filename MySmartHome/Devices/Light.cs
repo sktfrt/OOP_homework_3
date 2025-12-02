@@ -9,6 +9,7 @@ namespace MySmartHome.Devices
         private readonly EventLogger logger = new EventLogger();
         private bool isOn;
         private string brightness;
+        public string Name { get; set;} = "Light";
 
         public void HandleEvent(string eventType, object eventData)
         {

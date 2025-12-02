@@ -9,6 +9,7 @@ namespace MySmartHome.Devices
         private readonly EventLogger logger = new EventLogger();
         private int minTemperature = 10;
         private bool isOn;
+        public string Name { get; set;} = "Heater";
 
         public void HandleEvent(string eventType, object eventData)
         {
